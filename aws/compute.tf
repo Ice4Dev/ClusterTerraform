@@ -26,7 +26,7 @@
 #}
 
 resource "aws_instance" "mgmt" {
-  ami           = data.aws_ami.rocky8.id
+  ami           = 'ami-0f70021053ecf5cee'
   instance_type = var.management_shape
   vpc_security_group_ids = [aws_security_group.mgmt.id]
   subnet_id = aws_subnet.vpc_subnetwork.id
