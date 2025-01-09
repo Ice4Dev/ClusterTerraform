@@ -1,29 +1,29 @@
-data "aws_ami" "rocky8" {
+#data "aws_ami" "rocky8" {
   # See http://cavaliercoder.com/blog/finding-the-latest-centos-ami.html
   # https://wiki.centos.org/Cloud/AWS
-  most_recent = true
+  #most_recent = true
 
-  filter {
-    name   = "name"
-    values = ["Rocky-8*"]
-  }
+#  filter {
+#    name   = "name"
+#    values = ["Rocky-8*"]
+#  }
 
-  filter {
-    name = "architecture"
-    values = ["x86_64"]
-  }
+#  filter {
+#    name = "architecture"
+#    values = ["x86_64"]
+#  }
 
-  owners = ["792107900819"] #Owner ID as stated from https://forums.rockylinux.org/t/rocky-linux-official-aws-ami/3049/25
-}
+#  owners = ["792107900819"] #Owner ID as stated from https://forums.rockylinux.org/t/rocky-linux-official-aws-ami/3049/25
+#}
 
-locals {
-  mgmt_hostname = "mgmt"
-}
+#locals {
+#  mgmt_hostname = "mgmt"
+#}
 
-resource "tls_private_key" "provisioner_key" {
-  algorithm   = "RSA"  # AWS only supports RSA, not ECDSA
-  rsa_bits = "4096"
-}
+#resource "tls_private_key" "provisioner_key" {
+#  algorithm   = "RSA"  # AWS only supports RSA, not ECDSA
+#  rsa_bits = "4096"
+#}
 
 resource "aws_instance" "mgmt" {
   ami           = data.aws_ami.rocky8.id
@@ -44,14 +44,14 @@ resource "aws_instance" "mgmt" {
 
     connection {
       type        = "ssh"
-      user        = "rocky"
+      user        = "ec2-user"
       private_key = tls_private_key.provisioner_key.private_key_pem
       host        = self.public_ip
     }
   }
 
   provisioner "file" {
-    destination = "/home/rocky/aws-credentials.csv"
+    destination = "/home/ec2-user/aws-credentials.csv"
     content     = <<EOF
 [default]
 aws_access_key_id = ${aws_iam_access_key.mgmt_sa.id}
@@ -60,7 +60,7 @@ EOF
 
     connection {
       type        = "ssh"
-      user        = "rocky"
+      user        = "ec2-user"
       private_key = tls_private_key.provisioner_key.private_key_pem
       host        = self.public_ip
     }
